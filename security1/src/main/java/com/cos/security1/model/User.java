@@ -2,7 +2,6 @@ package com.cos.security1.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -18,7 +17,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    
+
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
