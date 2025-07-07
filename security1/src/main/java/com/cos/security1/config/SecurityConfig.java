@@ -6,6 +6,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -25,10 +26,15 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .formLogin(login -> login //로그인 페이지 설정
-                        .loginPage("/login") //권한이 없으면 이 페이지로 돌아간다!
+                        .loginPage("/loginForm") //권한이 없으면 이 페이지로 돌아간다!
                 );
         //hasRole, hasAnyRole은 내부적으로 ROLE_ 접두어를 붙인다
         return http.build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 

@@ -16,9 +16,7 @@ spring:
         # mustache path : sec/main/resources
         # mustache : templates (prefix), .mustache (suffix) >> config로 재설정함
 
-jpa:
-    hibernate:
-        ddl-auto: create #create update none
-        naming:
-            physical-strategy:org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
+    jpa:
+        hibernate:
+            ddl-auto: create-drop #create update none
+        show-sql: true
