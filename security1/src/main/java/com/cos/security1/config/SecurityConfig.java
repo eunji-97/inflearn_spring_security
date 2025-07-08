@@ -3,6 +3,8 @@ package com.cos.security1.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -11,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity //스프링 시큐리티 필터가 필터체인에 등록
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true) //@Secured 허용, @PreAuthorize/@PostAuthorize 허용
 public class SecurityConfig {
 
     //WebSecurityConfigurerAdapter 제거되어 SecurityFilterChain으로 대체
@@ -21,8 +24,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) //CSRF 보호해제
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/user/**").authenticated()
-                        .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/manager/**").hasAnyAuthority("ADMIN", "MANAGER")
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN") //hasRole는 ROLE_ 접두사를 붙임
                         .anyRequest().permitAll()
                 )
                 .formLogin(login -> login //로그인 페이지 설정

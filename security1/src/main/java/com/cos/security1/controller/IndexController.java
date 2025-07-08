@@ -5,6 +5,9 @@ import com.cos.security1.model.User;
 import com.cos.security1.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,6 +63,14 @@ public class IndexController {
         user.setPassword(bCryptPasswordEncoder.encode(password));
         userRepository.save(user);
         return "redirect:/loginForm";
+    }
+
+    @PreAuthorize("hasAuthority('MANAGER') or hasAuthority('ADMIN')")
+    @PostAuthorize("hasAuthority('MANAGER') or hasAuthority('ADMIN')") //pre는 메서드 실행 전, post는 실행 후 권한을 확인함
+    //@Secured : 컨피그에서 걸지 않아도 간단히 설정 가능, @PreAuthorize : hasAuthority 여러개 설정 가능
+    @GetMapping("/data")
+    public @ResponseBody String data(){
+        return "data 정보";
     }
 
 
