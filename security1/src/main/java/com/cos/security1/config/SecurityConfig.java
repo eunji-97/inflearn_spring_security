@@ -32,7 +32,13 @@ public class SecurityConfig {
                         .loginPage("/loginForm") //권한이 없으면 이 페이지로 돌아간다!
                         .loginProcessingUrl("/login") //주소 호출 시 시큐리티가 대신 로그인을 진행함
                         .defaultSuccessUrl("/")
+
+                )
+                .oauth2Login(oauth2 -> oauth2
+                                .loginPage("/loginForm")
+                        // 구글 로그인 후 후처리 필요
                 );
+
         //hasRole, hasAnyRole은 내부적으로 ROLE_ 접두어를 붙인다
         return http.build();
     }

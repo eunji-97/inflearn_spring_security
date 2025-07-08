@@ -20,3 +20,15 @@ spring:
         hibernate:
             ddl-auto: update #create update none
         show-sql: true
+
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        client-id: ${CLIENT_ID}
+                        client-secret: ${CLIENT_SECRET}
+                        scope:
+                            - email
+                            - profile
+
