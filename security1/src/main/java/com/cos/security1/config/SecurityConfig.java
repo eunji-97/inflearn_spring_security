@@ -1,5 +1,7 @@
 package com.cos.security1.config;
 
+import com.cos.security1.config.oauth.PrincipalOauth2UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -14,9 +16,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity //스프링 시큐리티 필터가 필터체인에 등록
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true) //@Secured 허용, @PreAuthorize/@PostAuthorize 허용
+@AllArgsConstructor
 public class SecurityConfig {
 
     //WebSecurityConfigurerAdapter 제거되어 SecurityFilterChain으로 대체
+
+    private final PrincipalOauth2UserService principalOauth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,7 +41,11 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                                 .loginPage("/loginForm")
-                        // 구글 로그인 후 후처리 필요
+                        // 구글 로그인 후 후처리 필요 보통은 1. 코드 받음 (인증) 2. 엑세스토큰(권한) 3. 사용자 정보 가져오기 4. 정보로 회원가입 진행
+                        // 구글 로그인은 코드를 받지 않고 엑세스토큰 + 사용자 정보를 한번에 받을 예정
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(principalOauth2UserService)
+                        )
                 );
 
         //hasRole, hasAnyRole은 내부적으로 ROLE_ 접두어를 붙인다

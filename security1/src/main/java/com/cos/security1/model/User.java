@@ -18,6 +18,9 @@ public class User {
     private String password;
     private String email;
 
+    private String provider; //뭘로 로그인했는지
+    private String providerId;
+
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
