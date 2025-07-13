@@ -2,6 +2,7 @@ package com.cos.security1.config.auth;
 
 import com.cos.security1.model.User;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -15,18 +16,21 @@ import java.util.Map;
 //세션에 들어갈 수 있는 오브젝트 -> Authentication 객체 (안에 유저 정보가 있어야 함 -> UserDetail 객체)
 
 @Data
+@RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
-    private User user; //컴포지션
+    private User user; //컴포지션, 일반 로그인
+    private Map<String, Object> attributes; //oauth 로그인
 
     public PrincipalDetails(User user){
         this.user = user;
     }
 
-    @Override
-    public Map<String, Object> getAttributes() {
-        return Map.of();
+    public PrincipalDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
+        this.attributes = attributes;
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {  //해당 유저의 권한을 리턴
@@ -41,6 +45,11 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     }
 
     @Override
+    public Map<String, Object> getAttributes() {
+        return Map.of();
+    }
+
+    @Override
     public String getPassword() {
         return user.getPassword();
     }
@@ -48,6 +57,11 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     @Override
     public String getUsername() {
         return user.getUsername();
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 
     @Override
@@ -70,8 +84,4 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         return true;
     } // 휴면 계정일 때
 
-    @Override
-    public String getName() {
-        return "";
-    }
 }

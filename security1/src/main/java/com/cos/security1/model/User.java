@@ -1,6 +1,7 @@
 package com.cos.security1.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -26,4 +27,16 @@ public class User {
 
     @CreationTimestamp
     private Timestamp createDate;
+
+    @Builder
+    public User(String username, String password, String email, String provider, String providerId, RoleType role){
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.provider = provider;
+        this.providerId = providerId;
+        this.role = role;
+    }
+
+    public User() {}
 }

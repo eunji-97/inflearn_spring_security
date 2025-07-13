@@ -59,15 +59,16 @@ public class IndexController {
     }
 
     @GetMapping("/user")
-    public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails uesrDetails){ // 일반 로그인은 이걸로 유저정보를 받는다!
+    public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails uesrDetails){ // 일반 로그인은 uesrDetails로 유저정보를 받는다!
+        log.info("principal Details :: " + uesrDetails.getUser());
         return "user";
     }
 
     @GetMapping("/user2")
-    public @ResponseBody String user2(@AuthenticationPrincipal OAuth2User oAuth2){ // 구글 로그인은 이걸로 유저정보를 받는다!
+    public @ResponseBody String user2(@AuthenticationPrincipal OAuth2User oAuth2){ // 구글 로그인은 OAuth2User로 유저정보를 받는다!
         return "user";
     }
-    //그럼 두개를 다 받을 수 있도록 하는 방법은? >> 두개의 클래스를 상속받은 X 라는 클래스를 새로 만들면 OK
+    //그럼 두개를 다 받을 수 있도록 하는 방법은? >> 두개의 클래스를 상속받은 X 라는 클래스를 새로 만들면 OK >> PrincipalDetails에 2개를 상속받게 하자
 
     @GetMapping("/admin")
     public @ResponseBody String admin(){
