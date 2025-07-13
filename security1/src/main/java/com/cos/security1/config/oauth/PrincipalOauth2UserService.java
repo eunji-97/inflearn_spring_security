@@ -2,6 +2,9 @@ package com.cos.security1.config.oauth;
 
 
 import com.cos.security1.config.auth.PrincipalDetails;
+import com.cos.security1.config.oauth.provider.FacebookUserInfo;
+import com.cos.security1.config.oauth.provider.GoogleUserInfo;
+import com.cos.security1.config.oauth.provider.OAuth2UserInfo;
 import com.cos.security1.model.RoleType;
 import com.cos.security1.model.User;
 import com.cos.security1.repository.UserRepository;
@@ -45,11 +48,26 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         System.out.println("oAuth2User :: " + oAuth2User.getAttributes());
 
-        String provider = userRequest.getClientRegistration().getClientId(); //google
-        String providerId = oAuth2User.getAttribute("sub");
+        OAuth2UserInfo oAuth2UserInfo = null;
+        switch (userRequest.getClientRegistration().getRegistrationId()) {
+            case "google" : {
+                oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+                break;
+            }
+            case "facebook" : {
+                oAuth2UserInfo = new FacebookUserInfo(oAuth2User.getAttributes());
+                break;
+            }
+            default:
+                return null;
+
+        }
+
+        String provider = oAuth2UserInfo.getProvider();
+        String providerId = oAuth2UserInfo.getProviderId();//구글은 sub, 페이스북은 id
         String username = provider+"_"+providerId;
         String password = bCryptPasswordEncoder.encode("비밀번호");
-        String email = oAuth2User.getAttribute("email");
+        String email = oAuth2UserInfo.getEmail();
 
         User userEntity = userRepository.findByUsername(username);
 
