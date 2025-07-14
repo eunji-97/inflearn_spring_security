@@ -4,6 +4,7 @@ package com.cos.security1.config.oauth;
 import com.cos.security1.config.auth.PrincipalDetails;
 import com.cos.security1.config.oauth.provider.FacebookUserInfo;
 import com.cos.security1.config.oauth.provider.GoogleUserInfo;
+import com.cos.security1.config.oauth.provider.NaverUserInfo;
 import com.cos.security1.config.oauth.provider.OAuth2UserInfo;
 import com.cos.security1.model.RoleType;
 import com.cos.security1.model.User;
@@ -41,7 +42,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         System.out.println("ClientRegistration :: " + userRequest.getClientRegistration()); //RegistrationID로 어떤 Oauth 로 로그인했는지 확인
-        System.out.println("AccessToke :: " + userRequest.getAccessToken().getTokenValue());
+        System.out.println("AccessToken :: " + userRequest.getAccessToken().getTokenValue());
 
         //구글 로그인 버튼 > 구글 로그인 창 > 로그인 > code 리턴 (oauth-client 라이브러리) > accesstoken 요청
         //== userRequest 정보 > loadUser > 구글로부터 회원 프로필 받음
@@ -58,6 +59,10 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                 oAuth2UserInfo = new FacebookUserInfo(oAuth2User.getAttributes());
                 break;
             }
+            case "naver" : {
+                oAuth2UserInfo = new NaverUserInfo((Map)oAuth2User.getAttributes().get("response"));
+                break;
+            }
             default:
                 return null;
 
@@ -72,7 +77,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         User userEntity = userRepository.findByUsername(username);
 
         if(userEntity == null){
-            log.info("구글 로그인이 최초");
             userEntity = userRepository.save(User.builder()
                     .provider(provider)
                     .providerId(providerId)
@@ -81,10 +85,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .email(email)
                     .role(RoleType.USER)
                     .build());
-        }else {
-            log.info("구글 로그인을 이미 함");
         }
-
         //위 정보로 회원가입을 진행할 수 있다
         return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
     }
