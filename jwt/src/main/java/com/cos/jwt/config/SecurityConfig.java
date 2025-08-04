@@ -1,5 +1,7 @@
 package com.cos.jwt.config;
 
+import com.cos.jwt.filter.MyFilter1;
+import com.cos.jwt.filter.MyFilter3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
@@ -26,6 +29,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션을 사용하지 않겠다
                 )
                 .addFilter(corsFilter) //시큐리티 필터에 등록
+//                .addFilter(myFilter1) //그냥 필터는 오류남 Consider using addFilterBefore or addFilterAfter instead.
+                .addFilterBefore(new MyFilter3(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/user/**").hasAnyAuthority("USER", "ADMIN", "MANAGER")
                         .requestMatchers("/api/v1/manager/**").hasAuthority("MANAGER")
@@ -33,7 +38,8 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable);
+                .httpBasic(AbstractHttpConfigurer::disable); //
+        //basic 방식 : ID, PW를 들고 요청 // bearer 방식 : token을 들고 요청
 
 
         return http.build();
