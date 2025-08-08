@@ -1,10 +1,14 @@
 package com.cos.jwt.config;
 
+import com.cos.jwt.config.jwt.JwtAuthenticationFilter;
 import com.cos.jwt.filter.MyFilter1;
 import com.cos.jwt.filter.MyFilter3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
@@ -20,9 +24,13 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private final CorsFilter corsFilter;
+//    private final AuthenticationManager authenticationManager;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,AuthenticationConfiguration authConfig) throws Exception {
+
+        AuthenticationManager authenticationManager = authConfig.getAuthenticationManager();
+
         http
                 .csrf(AbstractHttpConfigurer::disable) //CSRF 보호해제
                 .sessionManagement(session ->
@@ -31,6 +39,7 @@ public class SecurityConfig {
                 .addFilter(corsFilter) //시큐리티 필터에 등록
 //                .addFilter(myFilter1) //그냥 필터는 오류남 Consider using addFilterBefore or addFilterAfter instead.
                 .addFilterBefore(new MyFilter3(), BasicAuthenticationFilter.class)
+                .addFilter(new JwtAuthenticationFilter(authenticationManager)) //이거 달면 AuthenticationManager를 파라미터로 넘겨야 함
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/user/**").hasAnyAuthority("USER", "ADMIN", "MANAGER")
                         .requestMatchers("/api/v1/manager/**").hasAuthority("MANAGER")
@@ -44,4 +53,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+
+
 }
